@@ -107,7 +107,7 @@ class TestHttpSocket extends HttpSocket {
  *
  * @param array $uri A $uri array, or uses $this->config if left empty
  * @param string $uriTemplate The Uri template/format to use
- * @return string A fully qualified URL formated according to $uriTemplate
+ * @return string A fully qualified URL formatted according to $uriTemplate
  */
 	public function buildUri($uri = array(), $uriTemplate = '%scheme://%user:%pass@%host:%port/%path?%query#%fragment') {
 		return parent::_buildUri($uri, $uriTemplate);
@@ -230,6 +230,7 @@ class HttpSocketTest extends CakeTestCase {
 		$this->Socket->__construct('http://www.cakephp.org:23/');
 		$baseConfig['host'] = $baseConfig['request']['uri']['host'] = 'www.cakephp.org';
 		$baseConfig['port'] = $baseConfig['request']['uri']['port'] = 23;
+		$baseConfig['request']['uri']['scheme'] = 'http';
 		$baseConfig['protocol'] = getprotobyname($baseConfig['protocol']);
 		$this->assertEquals($this->Socket->config, $baseConfig);
 
@@ -258,6 +259,7 @@ class HttpSocketTest extends CakeTestCase {
 					'host' => 'www.cakephp.org',
 					'port' => 23
 				),
+				'redirect' => false,
 				'cookies' => array()
 			)
 		);
@@ -282,14 +284,17 @@ class HttpSocketTest extends CakeTestCase {
 					'host' => 'www.foo.com',
 					'port' => 80
 				),
+				'redirect' => false,
 				'cookies' => array()
 			)
 		);
 		$this->assertEquals($this->Socket->config, $expected);
 		$this->assertTrue($r);
+
 		$r = $this->Socket->configUri('/this-is-broken');
 		$this->assertEquals($this->Socket->config, $expected);
 		$this->assertFalse($r);
+
 		$r = $this->Socket->configUri(false);
 		$this->assertEquals($this->Socket->config, $expected);
 		$this->assertFalse($r);
@@ -322,7 +327,8 @@ class HttpSocketTest extends CakeTestCase {
 								'host' => 'www.cakephp.org',
 								'port' => 80
 							),
-							'cookies' => array(),
+							'redirect' => false,
+							'cookies' => array()
 						)
 					),
 					'request' => array(
@@ -342,6 +348,7 @@ class HttpSocketTest extends CakeTestCase {
 						'line' => "GET /?foo=bar HTTP/1.1\r\n",
 						'header' => "Host: www.cakephp.org\r\nConnection: close\r\nUser-Agent: CakePHP\r\n",
 						'raw' => "",
+						'redirect' => false,
 						'cookies' => array(),
 						'proxy' => array(),
 						'auth' => array()
@@ -550,7 +557,7 @@ class HttpSocketTest extends CakeTestCase {
 
 /**
  * Test the scheme + port keys
- * 
+ *
  * @return void
  */
 	public function testGetWithSchemeAndPort() {
@@ -566,6 +573,26 @@ class HttpSocketTest extends CakeTestCase {
 		);
 		$response = $this->Socket->request($request);
 		$this->assertContains('Host: cakephp.org:8080', $this->Socket->request['header']);
+	}
+
+/**
+ * Test urls like http://cakephp.org/index.php?somestring without key/value pair for query
+ *
+ * @return void
+ */
+	public function testRequestWithStringQuery() {
+		$this->Socket->reset();
+		$request = array(
+			'uri' => array(
+				'scheme' => 'http',
+				'host' => 'cakephp.org',
+				'path' => 'index.php',
+				'query' => 'somestring'
+			),
+			'method' => 'GET'
+		);
+		$response = $this->Socket->request($request);
+		$this->assertContains("GET /index.php?somestring HTTP/1.1", $this->Socket->request['line']);
 	}
 
 /**
@@ -734,6 +761,57 @@ class HttpSocketTest extends CakeTestCase {
 		$this->assertInstanceOf('CustomResponse', $response);
 		$this->assertEquals($response->first10, 'HTTP/1.x 2');
 	}
+ 
+
+/**
+ * testRequestWithRedirect method
+ *
+ * @return void
+ */
+	public function testRequestWithRedirectAsTrue() {
+		$request = array(
+			'uri' => 'http://localhost/oneuri',
+			'redirect' => true
+		);
+		$serverResponse1 = "HTTP/1.x 302 Found\r\nDate: Mon, 16 Apr 2007 04:14:16 GMT\r\nServer: CakeHttp Server\r\nContent-Type: text/html\r\nLocation: http://localhost/anotheruri\r\n\r\n";
+		$serverResponse2 = "HTTP/1.x 200 OK\r\nDate: Mon, 16 Apr 2007 04:14:16 GMT\r\nServer: CakeHttp Server\r\nContent-Type: text/html\r\n\r\n<h1>You have been redirected</h1>";
+		$this->Socket->expects($this->at(1))->method('read')->will($this->returnValue($serverResponse1));
+		$this->Socket->expects($this->at(4))->method('read')->will($this->returnValue($serverResponse2));
+	
+		$response = $this->Socket->request($request);
+		$this->assertEquals('<h1>You have been redirected</h1>', $response->body());
+	}
+	
+	public function testRequestWithRedirectAsInt() {
+		$request = array(
+			'uri' => 'http://localhost/oneuri',
+			'redirect' => 2
+		);
+		$serverResponse1 = "HTTP/1.x 302 Found\r\nDate: Mon, 16 Apr 2007 04:14:16 GMT\r\nServer: CakeHttp Server\r\nContent-Type: text/html\r\nLocation: http://localhost/anotheruri\r\n\r\n";
+		$serverResponse2 = "HTTP/1.x 200 OK\r\nDate: Mon, 16 Apr 2007 04:14:16 GMT\r\nServer: CakeHttp Server\r\nContent-Type: text/html\r\n\r\n<h1>You have been redirected</h1>";
+		$this->Socket->expects($this->at(1))->method('read')->will($this->returnValue($serverResponse1));
+		$this->Socket->expects($this->at(4))->method('read')->will($this->returnValue($serverResponse2));
+	
+		$response = $this->Socket->request($request);
+		$this->assertEquals(1, $this->Socket->request['redirect']);
+	}
+	
+	public function testRequestWithRedirectAsIntReachingZero() {
+		$request = array(
+			'uri' => 'http://localhost/oneuri',
+			'redirect' => 1
+		);
+		$serverResponse1 = "HTTP/1.x 302 Found\r\nDate: Mon, 16 Apr 2007 04:14:16 GMT\r\nServer: CakeHttp Server\r\nContent-Type: text/html\r\nLocation: http://localhost/oneruri\r\n\r\n";
+		$serverResponse2 = "HTTP/1.x 302 Found\r\nDate: Mon, 16 Apr 2007 04:14:16 GMT\r\nServer: CakeHttp Server\r\nContent-Type: text/html\r\nLocation: http://localhost/anotheruri\r\n\r\n";
+		$this->Socket->expects($this->at(1))->method('read')->will($this->returnValue($serverResponse1));
+		$this->Socket->expects($this->at(4))->method('read')->will($this->returnValue($serverResponse2));
+	
+		$response = $this->Socket->request($request);
+		$this->assertEquals(0, $this->Socket->request['redirect']);
+		$this->assertEquals(302, $response->code);
+		$this->assertEquals('http://localhost/anotheruri', $response->getHeader('Location'));
+	}
+	
 
 /**
  * testProxy method
@@ -892,11 +970,16 @@ class HttpSocketTest extends CakeTestCase {
 			->method('request')
 			->with(array('method' => 'GET', 'uri' => 'http://www.google.com/', 'version' => '1.0'));
 
+		$this->RequestSocket->expects($this->at(5))
+			->method('request')
+			->with(array('method' => 'GET', 'uri' => 'https://secure.example.com/test.php?one=two'));
+
 		$this->RequestSocket->get('http://www.google.com/');
 		$this->RequestSocket->get('http://www.google.com/', array('foo' => 'bar'));
 		$this->RequestSocket->get('http://www.google.com/', 'foo=bar');
 		$this->RequestSocket->get('http://www.google.com/?foo=bar', array('foobar' => '42', 'foo' => '23'));
 		$this->RequestSocket->get('http://www.google.com/', null, array('version' => '1.0'));
+		$this->RequestSocket->get('https://secure.example.com/test.php', array('one' => 'two'));
 	}
 
 /**
@@ -1306,9 +1389,6 @@ class HttpSocketTest extends CakeTestCase {
 		$query = $this->Socket->parseQuery('a[]=foo&a[]=bar&a[]=cake');
 		$this->assertEquals($query, array('a' => array(0 => 'foo', 1 => 'bar', 2 => 'cake')));
 
-		$query = $this->Socket->parseQuery('a]][[=foo&[]=bar&]]][]=cake');
-		$this->assertEquals($query, array('a]][[' => 'foo', 0 => 'bar', ']]]' => array('cake')));
-
 		$query = $this->Socket->parseQuery('a[][]=foo&a[][]=bar&a[][]=cake');
 		$expectedQuery = array(
 			'a' => array(
@@ -1458,7 +1538,7 @@ class HttpSocketTest extends CakeTestCase {
 	}
 
 /**
- * Test that HttpSocket::escapeToken is escaping all characters as descriped in RFC 2616 (HTTP 1.1 specs)
+ * Test that HttpSocket::escapeToken is escaping all characters as described in RFC 2616 (HTTP 1.1 specs)
  *
  * @return void
  */

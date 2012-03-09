@@ -133,7 +133,7 @@ class ViewTask extends BakeTask {
  * @return array Array of action names that should be baked
  */
 	protected function _methodsToBake() {
-		$methods =  array_diff(
+		$methods = array_diff(
 			array_map('strtolower', get_class_methods($this->controllerName . 'Controller')),
 			array_map('strtolower', get_class_methods('AppController'))
 		);
@@ -195,7 +195,7 @@ class ViewTask extends BakeTask {
  */
 	protected function _interactive() {
 		$this->hr();
-		$this->out(sprintf("Bake View\nPath: %s", $this->path));
+		$this->out(sprintf("Bake View\nPath: %s", $this->getPath()));
 		$this->hr();
 
 		$this->DbConfig->interactive = $this->Controller->interactive = $this->interactive = true;
@@ -448,7 +448,7 @@ class ViewTask extends BakeTask {
  * @param Model $model
  * @return array $associations
  */
-	protected function _associations($model) {
+	protected function _associations(Model $model) {
 		$keys = array('belongsTo', 'hasOne', 'hasMany', 'hasAndBelongsToMany');
 		$associations = array();
 
@@ -459,9 +459,10 @@ class ViewTask extends BakeTask {
 				$associations[$type][$assocKey]['displayField'] = $model->{$assocKey}->displayField;
 				$associations[$type][$assocKey]['foreignKey'] = $assocData['foreignKey'];
 				$associations[$type][$assocKey]['controller'] = Inflector::pluralize(Inflector::underscore($modelClass));
-				$associations[$type][$assocKey]['fields'] =  array_keys($model->{$assocKey}->schema(true));
+				$associations[$type][$assocKey]['fields'] = array_keys($model->{$assocKey}->schema(true));
 			}
 		}
 		return $associations;
 	}
+
 }

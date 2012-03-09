@@ -217,10 +217,12 @@ class ErrorHandler {
 				$log = LOG_NOTICE;
 			break;
 			case E_DEPRECATED:
+			case E_USER_DEPRECATED:
 				$error = 'Deprecated';
 				$log = LOG_NOTICE;
 			break;
 		}
 		return array($error, $log);
 	}
+
 }

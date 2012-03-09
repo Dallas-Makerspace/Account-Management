@@ -69,7 +69,13 @@ class Sanitize {
 		if (is_numeric($string) || $string === null || is_bool($string)) {
 			return $string;
 		}
-		$string = substr($db->value($string), 1);
+		$string = $db->value($string, 'string');
+		if ($string[0] === 'N') {
+			$string = substr($string, 2);
+		} else {
+			$string = substr($string, 1);
+		}
+
 		$string = substr($string, 0, -1);
 		return $string;
 	}
@@ -208,7 +214,7 @@ class Sanitize {
 
 		if (is_string($options)) {
 			$options = array('connection' => $options);
-		} else if (!is_array($options)) {
+		} elseif (!is_array($options)) {
 			$options = array();
 		}
 
@@ -254,4 +260,5 @@ class Sanitize {
 			return $data;
 		}
 	}
+
 }

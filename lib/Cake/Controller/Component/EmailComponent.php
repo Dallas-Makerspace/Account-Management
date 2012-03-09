@@ -270,7 +270,7 @@ class EmailComponent extends Component {
  * @param Controller $controller Instantiating controller
  * @return void
  */
-	public function initialize($controller) {
+	public function initialize(Controller $controller) {
 		if (Configure::read('App.encoding') !== null) {
 			$this->charset = Configure::read('App.encoding');
 		}
@@ -379,6 +379,7 @@ class EmailComponent extends Component {
 		$this->htmlMessage = null;
 		$this->textMessage = null;
 		$this->messageId = true;
+		$this->delivery = 'mail';
 	}
 
 /**

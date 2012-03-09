@@ -38,7 +38,7 @@ class ConsoleOptionParserTest extends CakeTestCase {
 	}
 
 /**
- * test setting the console epliog
+ * test setting the console epilog
  *
  * @return void
  */
@@ -302,7 +302,7 @@ class ConsoleOptionParserTest extends CakeTestCase {
 	public function testPositionalArgument() {
 		$parser = new ConsoleOptionParser('test', false);
 		$result = $parser->addArgument('name', array('help' => 'An argument'));
-		$this->assertEquals($parser, $result, 'Should returnn this');
+		$this->assertEquals($parser, $result, 'Should return this');
 	}
 
 /**
@@ -348,6 +348,19 @@ class ConsoleOptionParserTest extends CakeTestCase {
 		$this->assertEquals($expected, $result[1], 'Arguments are not as expected');
 
 		$result = $parser->parse(array('one', 'two', 'three'));
+	}
+
+/**
+ * test parsing arguments with 0 value.
+ *
+ * @return void
+ */
+	public function testParseArgumentZero() {
+		$parser = new ConsoleOptionParser('test', false);
+
+		$expected = array('one', 'two', 0, 'after', 'zero');
+		$result = $parser->parse($expected);
+		$this->assertEquals($expected, $result[1], 'Arguments are not as expected');
 	}
 
 /**
