@@ -32,4 +32,29 @@ App::uses('Controller', 'Controller');
  * @link http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+	public $helpers = array('Form', 'Html', 'Session', 'Js');
+	public $components = array(
+		'Session',
+		'RequestHandler',
+		'Security',
+		'Auth' => array(
+			'loginRedirect' => array('controller' => 'users', 'action' => 'dashboard'),
+            'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
+			'authError' => 'Did you really think you are allowed to see that?',
+			'authorize' => array('Controller')
+		),
+	);
+
+	function beforeFilter(){
+		// Sha1 is the default, but lets use sha254 instead
+		Security::setHash('sha256');
+		//$this->Auth->allow('index', 'view');
+	}
+
+	public function isAuthorized($user) {
+		if (isset($user['role']) && $user['role'] === 'admin') {
+			return true; //Admin can access every action
+		}
+		return false; // Default, no access to actions
+	}
 }
