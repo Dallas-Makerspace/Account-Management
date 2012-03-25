@@ -30,7 +30,6 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 		echo $this->Html->meta('icon');
 
 		echo $this->Html->css('cake.generic');
-		echo $this->Html->css('/usermgmt/css/umstyle');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');

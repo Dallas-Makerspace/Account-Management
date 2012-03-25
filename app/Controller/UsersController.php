@@ -5,7 +5,7 @@ class UsersController extends AppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		// Allow register, login and logout for everyone
-		$this->Auth->allow('register', 'verify', 'login', 'logout');
+		$this->Auth->allow('register', 'verify', 'login', 'logout', 'lostuser', 'lostpass', 'verifylostpass');
 	}
 
 	public function isAuthorized($user) {
@@ -36,6 +36,7 @@ class UsersController extends AppController {
 		} elseif($this->request->is('post') || $this->request->is('put')) {
 			$this->Session->setFlash(__('Invalid username or password, try again'));
 		}
+		unset($this->request->data['User']['password']);
 	}
 
 	public function logout() {
@@ -53,8 +54,17 @@ class UsersController extends AppController {
 			$this->request->data['User']['class'] = 'friend';
 			$this->request->data['User']['active'] = 0;
 			$this->request->data['User']['verification_code'] = String::uuid();
+			$user = $this->request->data;
 			if ($this->User->save($this->request->data)) {
-				// TODO: Send verification e-mail
+				App::uses('CakeEmail', 'Network/Email');
+				$email = new CakeEmail('default');
+				$email->template('verification')
+					->emailFormat('both')
+					->viewVars(array('user' => $user))
+					->to($user['User']['email'])
+					->subject('Account Verification')
+					->send();
+
 				$this->Session->setFlash(__('Your account has been created, please check your e-mail to verify the account'));
 				$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
 			} else {
@@ -76,21 +86,166 @@ class UsersController extends AppController {
 			$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
 		}
 
+		if ($user['User']['active'] == 1) {
+			$this->Session->setFlash(__('This account has already been activated'));
+			$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+		}
+
 		App::uses('CakeTime', 'Utility');
 		if (CakeTime::wasWithinLast('2 days', $user['User']['modified'])) {
 			unset($user['User']['password']);
 			$user['User']['verification_code'] = null;
 			$user['User']['active'] = 1;
 			if ($this->User->save($user)) {
-				// TODO: Send account verified e-mail
+				App::uses('CakeEmail', 'Network/Email');
+				$email = new CakeEmail('default');
+				$email->template('welcome')
+					->emailFormat('both')
+					->viewVars(array('user' => $user))
+					->to($user['User']['email'])
+					->subject('Welcome')
+					->send();
+
 				$this->Session->setFlash(__('Your account is now active, please login.'));
-				$this->redirect(array('controller' => 'users', 'action' => 'login'));
+				$this->redirect(array('action' => 'login'));
 			} else {
 				$this->Session->setFlash(__('An error occurred. Please, try again later.'));
 			}
 		} else {
+			unset($user['User']['password']);
 			$user['User']['verification_code'] = String::uuid();
+			if ($this->User->save($user,false)) {
+				App::uses('CakeEmail', 'Network/Email');
+				$email = new CakeEmail('default');
+				$email->template('verification')
+					->emailFormat('both')
+					->viewVars(array('user' => $user))
+					->to($user['User']['email'])
+					->subject('Account Verification')
+					->send();
+
+				$this->Session->setFlash(__('Verification code has expired, a new one has been sent'));
+			} else {
+				$this->Session->setFlash(__('An error occurred. Please, try again later.'));
+			}
+		}
+		$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+	}
+
+	public function lostuser() {
+		if ($this->Auth->user()) {
+			$this->Session->setFlash(__('Really? You forgot your username?'));
+			$this->redirect($this->Auth->redirect());
+		}
+
+		if ($this->request->is('post')) {
+			$user = $this->User->findByEmail($this->request->data['User']['email']);
+			if ($user) {
+				App::uses('CakeEmail', 'Network/Email');
+				$email = new CakeEmail('default');
+				$email->template('lostuser')
+					->emailFormat('both')
+					->viewVars(array('user' => $user))
+					->to($user['User']['email'])
+					->subject('Your Account Info')
+					->send();
+
+				$this->Session->setFlash(__('An e-mail has been sent to you with your username'));
+				$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+			} else {
+				$this->Session->setFlash(__('No account found with that e-mail address'));
+			}
+		}
+	}
+
+	public function lostpass() {
+		if ($this->Auth->user()) {
+			$this->Session->setFlash(__('Password can not be reset while logged in'));
+			$this->redirect($this->Auth->redirect());
+		}
+
+		if ($this->request->is('post')) {
+			$user = $this->User->findByEmail($this->request->data['User']['email']);
+			if ($user) {
+				if ($user['User']['active'] == 0) {
+					$this->Session->setFlash(__('This account has not been activated yet'));
+					$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+				}
+
+				unset($user['User']['password']);
+				$user['User']['verification_code'] = String::uuid();
+				if ($this->User->save($user,false)) {
+					App::uses('CakeEmail', 'Network/Email');
+					$email = new CakeEmail('default');
+					$email->template('lostpass')
+						->emailFormat('both')
+						->viewVars(array('user' => $user))
+						->to($user['User']['email'])
+						->subject('Password Reset Request')
+						->send();
+
+					$this->Session->setFlash(__('Password reset verification sent, please check your email'));
+					$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+				} else {
+					$this->Session->setFlash(__('An error occurred. Please, try again later.'));
+				}
+			} else {
+				$this->Session->setFlash(__('No account found with that e-mail address'));
+			}
+		}
+	}
+
+	public function verifylostpass($uuid = false) {
+		if ($this->Auth->user()) {
+			$this->Session->setFlash(__('Password can not be reset while logged in'));
+			$this->redirect($this->Auth->redirect());
+		}
+
+		$user = $this->User->findByVerificationCode($uuid);
+
+		if (!$user) {
+			$this->Session->setFlash(__('Invalid verification code'));
+			$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+		}
+
+		if ($user['User']['active'] == 0) {
+			$this->Session->setFlash(__('This account has not been activated yet'));
+			$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+		}
+
+		App::uses('CakeTime', 'Utility');
+		if (CakeTime::wasWithinLast('2 days', $user['User']['modified'])) {
+			$password = $this->__randompassword();
+			$user['User']['password'] = $password;
+			$user['User']['verification_code'] = null;
 			if ($this->User->save($user)) {
+				App::uses('CakeEmail', 'Network/Email');
+				$email = new CakeEmail('default');
+				$email->template('lostpasscomplete')
+					->emailFormat('both')
+					->viewVars(array('user' => $user, 'password' => $password))
+					->to($user['User']['email'])
+					->subject('Password Reset Complete')
+					->send();
+
+				$this->Session->setFlash(__('Your password has been reset, please check your email.'));
+				$this->redirect(array('action' => 'login'));
+			} else {
+				$this->Session->setFlash(__('An error occurred. Please, try again later.'));
+			}
+		} else {
+			unset($user['User']['password']);
+			$user['User']['verification_code'] = String::uuid();
+			if ($this->User->save($user,false)) {
+				App::uses('CakeEmail', 'Network/Email');
+				$email = new CakeEmail('default');
+				$email->template('lostpass')
+					->emailFormat('both')
+					->viewVars(array('user' => $user))
+					->to($user['User']['email'])
+					->subject('Password Reset Request')
+					->send();
+
 				$this->Session->setFlash(__('Verification code has expired, a new one has been sent'));
 			} else {
 				$this->Session->setFlash(__('An error occurred. Please, try again later.'));
@@ -112,13 +267,12 @@ class UsersController extends AppController {
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($this->User->save($this->request->data)) {
 				$this->Session->setFlash(__('Your profile has been saved'));
-				$this->redirect(array('action' => 'index'));
+				$this->redirect(array('action' => 'dashboard'));
 			} else {
 				$this->Session->setFlash(__('Your profile could not be saved. Please, try again.'));
 			}
 		} else {
 			$this->request->data = $this->User->read(null, $this->User->id);
-			unset($this->request->data['User']['password']);
 		}
 	}
 
@@ -134,14 +288,24 @@ class UsersController extends AppController {
 				$this->Session->setFlash(__('The password you entered was incorrect. Please, try again.'));
 			} else {
 				if ($this->User->save($this->request->data)) {
-					// TODO: Send to new and old address a notification e-mail that the email has changed
+					App::uses('CakeEmail', 'Network/Email');
+					$email = new CakeEmail('default');
+					$email->template('changemail')
+						->emailFormat('both')
+						->viewVars(array('user' => $user, 'new_email' => $this->request->data['User']['email']))
+						->to($user['User']['email'])
+						->cc($this->request->data['User']['email'])
+						->subject('Account Change')
+						->send();
+
 					$this->Session->setFlash(__('Your email address has been updated'));
-					$this->redirect(array('action' => 'index'));
+					$this->redirect(array('action' => 'dashboard'));
 				} else {
 					$this->Session->setFlash(__('Your profile could not be saved. Please, try again.'));
 				}
 			}
 		}
+		unset($this->request->data['User']['password']);
 		$this->set('user', $user);
 	}
 
@@ -159,9 +323,17 @@ class UsersController extends AppController {
 			} else {
 				$this->request->data['User']['password'] = $this->request->data['User']['new_password'];
 				if ($this->User->save($this->request->data)) {
-					// TODO: Send notification e-mail that the password has changed
+					App::uses('CakeEmail', 'Network/Email');
+					$email = new CakeEmail('default');
+					$email->template('changepass')
+						->emailFormat('both')
+						->viewVars(array('user' => $user))
+						->to($user['User']['email'])
+						->subject('Account Change')
+						->send();
+
 					$this->Session->setFlash(__('Your password has been changed'));
-					$this->redirect(array('action' => 'index'));
+					$this->redirect(array('action' => 'dashboard'));
 				} else {
 					$this->Session->setFlash(__('Your profile could not be saved. Please, try again.'));
 				}
@@ -241,5 +413,19 @@ class UsersController extends AppController {
 		}
 		$this->Session->setFlash(__('User was not deleted'));
 		$this->redirect(array('action' => 'index'));
+	}
+
+	private function __randompassword() {
+		$chars = "abcdefghijkmnopqrstuvwxyz023456789"; 
+		srand((double)microtime()*1000000); 
+		$i = 0; 
+		$pass = '' ; 
+		while ($i <= 7) { 
+			$num = rand() % 33; 
+			$tmp = substr($chars, $num, 1); 
+			$pass = $pass . $tmp; 
+			$i++; 
+		} 
+		return $pass;
 	}
 }

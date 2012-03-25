@@ -41,14 +41,17 @@ class AppController extends Controller {
 			'loginRedirect' => array('controller' => 'users', 'action' => 'dashboard'),
             'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
 			'authError' => 'Did you really think you are allowed to see that?',
-			'authorize' => array('Controller')
+			'authorize' => array('Controller'),
 		),
 	);
 
 	function beforeFilter(){
 		// Sha1 is the default, but lets use sha254 instead
 		Security::setHash('sha256');
-		//$this->Auth->allow('index', 'view');
+
+		$this->Auth->authenticate = array(
+			'Form' => array('scope' => array('User.active' => 1)),
+		);
 	}
 
 	public function isAuthorized($user) {
