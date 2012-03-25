@@ -52,6 +52,8 @@ class AppController extends Controller {
 		$this->Auth->authenticate = array(
 			'Form' => array('scope' => array('User.active' => 1)),
 		);
+
+		$this->set('auth', $this->Auth->user());
 	}
 
 	public function isAuthorized($user) {

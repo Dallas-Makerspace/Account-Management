@@ -1,21 +1,6 @@
-<div class="users form">
-<?php echo $this->Form->create('User');?>
-	<fieldset>
-		<legend><?php echo __('Change Password'); ?></legend>
-	<?php
-		echo $this->Form->input('current_password', array('type' => 'password', 'label' => 'Current Password'));
-		echo $this->Form->input('new_password', array('type' => 'password', 'label' => 'New Password'));
-		echo $this->Form->input('verify_password', array('type' => 'password', 'label' => 'Verify New Password'));
-	?>
-	</fieldset>
-<?php
-	echo $this->Html->div('button-group',
-		$this->Form->button(__('Submit'), array('type'=>'submit','class'=>'button primary icon approve'))
-		. $this->Html->link(__('Cancel'), array('action' => 'index'), array('class' => 'button danger'))
-	);
-	echo $this->Form->end();
-?>
-</div>
+<?php $this->set('title_for_layout', "{$auth['first_name']}'s Dashboard"); ?>
+
+<h2><?php echo $auth['first_name']; ?>'s Dashboard</h2>
 
 <?php
 $page_actions = array(

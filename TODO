@@ -1,3 +1,10 @@
-Add profile pictures
-Add logging
-
+* profile pictures
+* logging
+* subscription management
+* maillist archive viewer
+* Payment/donation history and recurring billing
+* links to users' wiki profile page
+* change password hashing to include salt in the db?
+	Pro: makes it easier for cross-app authentication
+	Con: attacker that gains database access now has the salt+hash, currently they don't necessarily have the salt (though it's a single salt for all entries)
+* Cross-app login to wiki, inventory, voting, et al for single sign-on
