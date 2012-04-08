@@ -59,11 +59,15 @@ class UsersController extends AppController {
 				App::uses('CakeEmail', 'Network/Email');
 				$email = new CakeEmail('default');
 				$email->template('verification')
-					->emailFormat('both')
 					->viewVars(array('user' => $user))
 					->to($user['User']['email'])
-					->subject('Account Verification')
-					->send();
+					->subject('Account Verification');
+				if ($user['User']['textonly_email'] == 1) {
+					$email->emailFormat('text');
+				} else {
+					$email->emailFormat('both');
+				}
+				$email->send();
 
 				$this->Session->setFlash(__('Your account has been created, please check your e-mail to verify the account'));
 				$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
@@ -100,11 +104,15 @@ class UsersController extends AppController {
 				App::uses('CakeEmail', 'Network/Email');
 				$email = new CakeEmail('default');
 				$email->template('welcome')
-					->emailFormat('both')
 					->viewVars(array('user' => $user))
 					->to($user['User']['email'])
-					->subject('Welcome')
-					->send();
+					->subject('Welcome');
+				if ($user['User']['textonly_email'] == 1) {
+					$email->emailFormat('text');
+				} else {
+					$email->emailFormat('both');
+				}
+				$email->send();
 
 				$this->Session->setFlash(__('Your account is now active, please login.'));
 				$this->redirect(array('action' => 'login'));
@@ -118,11 +126,15 @@ class UsersController extends AppController {
 				App::uses('CakeEmail', 'Network/Email');
 				$email = new CakeEmail('default');
 				$email->template('verification')
-					->emailFormat('both')
 					->viewVars(array('user' => $user))
 					->to($user['User']['email'])
-					->subject('Account Verification')
-					->send();
+					->subject('Account Verification');
+				if ($user['User']['textonly_email'] == 1) {
+					$email->emailFormat('text');
+				} else {
+					$email->emailFormat('both');
+				}
+				$email->send();
 
 				$this->Session->setFlash(__('Verification code has expired, a new one has been sent'));
 			} else {
@@ -144,11 +156,15 @@ class UsersController extends AppController {
 				App::uses('CakeEmail', 'Network/Email');
 				$email = new CakeEmail('default');
 				$email->template('lostuser')
-					->emailFormat('both')
 					->viewVars(array('user' => $user))
 					->to($user['User']['email'])
-					->subject('Your Account Info')
-					->send();
+					->subject('Your Account Info');
+				if ($user['User']['textonly_email'] == 1) {
+					$email->emailFormat('text');
+				} else {
+					$email->emailFormat('both');
+				}
+				$email->send();
 
 				$this->Session->setFlash(__('An e-mail has been sent to you with your username'));
 				$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
@@ -178,11 +194,15 @@ class UsersController extends AppController {
 					App::uses('CakeEmail', 'Network/Email');
 					$email = new CakeEmail('default');
 					$email->template('lostpass')
-						->emailFormat('both')
 						->viewVars(array('user' => $user))
 						->to($user['User']['email'])
-						->subject('Password Reset Request')
-						->send();
+						->subject('Password Reset Request');
+					if ($user['User']['textonly_email'] == 1) {
+						$email->emailFormat('text');
+					} else {
+						$email->emailFormat('both');
+					}
+					$email->send();
 
 					$this->Session->setFlash(__('Password reset verification sent, please check your email'));
 					$this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
@@ -222,11 +242,15 @@ class UsersController extends AppController {
 				App::uses('CakeEmail', 'Network/Email');
 				$email = new CakeEmail('default');
 				$email->template('lostpasscomplete')
-					->emailFormat('both')
 					->viewVars(array('user' => $user, 'password' => $password))
 					->to($user['User']['email'])
-					->subject('Password Reset Complete')
-					->send();
+					->subject('Password Reset Complete');
+				if ($user['User']['textonly_email'] == 1) {
+					$email->emailFormat('text');
+				} else {
+					$email->emailFormat('both');
+				}
+				$email->send();
 
 				$this->Session->setFlash(__('Your password has been reset, please check your email.'));
 				$this->redirect(array('action' => 'login'));
@@ -240,11 +264,15 @@ class UsersController extends AppController {
 				App::uses('CakeEmail', 'Network/Email');
 				$email = new CakeEmail('default');
 				$email->template('lostpass')
-					->emailFormat('both')
 					->viewVars(array('user' => $user))
 					->to($user['User']['email'])
-					->subject('Password Reset Request')
-					->send();
+					->subject('Password Reset Request');
+				if ($user['User']['textonly_email'] == 1) {
+					$email->emailFormat('text');
+				} else {
+					$email->emailFormat('both');
+				}
+				$email->send();
 
 				$this->Session->setFlash(__('Verification code has expired, a new one has been sent'));
 			} else {
@@ -291,12 +319,16 @@ class UsersController extends AppController {
 					App::uses('CakeEmail', 'Network/Email');
 					$email = new CakeEmail('default');
 					$email->template('changemail')
-						->emailFormat('both')
 						->viewVars(array('user' => $user, 'new_email' => $this->request->data['User']['email']))
 						->to($user['User']['email'])
 						->cc($this->request->data['User']['email'])
-						->subject('Account Change')
-						->send();
+						->subject('Account Change');
+					if ($user['User']['textonly_email'] == 1) {
+						$email->emailFormat('text');
+					} else {
+						$email->emailFormat('both');
+					}
+					$email->send();
 
 					$this->Session->setFlash(__('Your email address has been updated'));
 					$this->redirect(array('action' => 'dashboard'));
@@ -326,11 +358,15 @@ class UsersController extends AppController {
 					App::uses('CakeEmail', 'Network/Email');
 					$email = new CakeEmail('default');
 					$email->template('changepass')
-						->emailFormat('both')
 						->viewVars(array('user' => $user))
 						->to($user['User']['email'])
-						->subject('Account Change')
-						->send();
+						->subject('Account Change');
+					if ($user['User']['textonly_email'] == 1) {
+						$email->emailFormat('text');
+					} else {
+						$email->emailFormat('both');
+					}
+					$email->send();
 
 					$this->Session->setFlash(__('Your password has been changed'));
 					$this->redirect(array('action' => 'dashboard'));

@@ -12,6 +12,7 @@
 		echo $this->Form->input('last_name');
 		echo $this->Form->input('phone');
 		echo $this->Form->input('active', array('checked' => 'checked'));
+		echo $this->Form->input('textonly_email', array('label' => 'Text-only emails'));
 	?>
 	</fieldset>
 <?php

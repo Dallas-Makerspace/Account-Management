@@ -11,6 +11,7 @@
 		echo $this->Form->input('first_name');
 		echo $this->Form->input('last_name');
 		echo $this->Form->input('phone');
+		echo $this->Form->input('textonly_email', array('label' => 'Text-only emails'));
 	?>
 	</fieldset>
 <?php
