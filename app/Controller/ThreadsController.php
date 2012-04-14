@@ -72,20 +72,14 @@ class ThreadsController extends AppController {
 		if ($this->request->is('post')) {
 			$this->request->data['Thread']['board_id'] = $board['Board']['id'];
 			$this->request->data['Thread']['user_id'] = $this->Auth->user('id');
-			$post['Post'] = $this->request->data['Post'];
+
+			$this->request->data['Post'][0]['user_id'] = $this->Auth->user('id');
+			$this->request->data['Post'][0]['mailed'] = 0;
 
 			$this->Thread->create();
-			if ($this->Thread->saveAll($this->request->data)) {
-				$post['Post']['user_id'] = $this->Auth->user('id');
-				$post['Post']['mailed'] = 0;
-				$post['Post']['thread_id'] = $this->Thread->id;
-				$this->Thread->Post->create();
-				if ($this->Thread->Post->save($post)) {
-					$this->Session->setFlash(__('The post has been saved'));
-					$this->redirect(array('controller' => 'boards', 'action' => 'index'));
-				} else {
-					$this->Session->setFlash(__('Oh no, this is very bad...'));
-				}
+			if ($this->Thread->saveAssociated($this->request->data)) {
+				$this->Session->setFlash(__('The post has been saved'));
+				$this->redirect(array('controller' => 'boards', 'action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The post could not be saved. Please, try again.'));
 			}

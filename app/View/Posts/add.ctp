@@ -5,6 +5,7 @@
 	<?php
 		echo $this->Form->input('text');
 	?>
+	All messages are formated using <?php echo $this->Html->link('MarkDown','http://daringfireball.net/projects/markdown/syntax'); ?>.
 	</fieldset>
 <?php
 	echo $this->Html->div('button-group',
