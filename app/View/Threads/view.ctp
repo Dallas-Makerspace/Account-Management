@@ -7,7 +7,7 @@
 		foreach ($thread['Post'] as $post): ?>
 		<tr>
 			<td>
-				<h3><a name="post-<?php echo $post['id']; ?>" />
+				<h3 id="post-<?php echo $post['id']; ?>">
 					<?php
 					echo $this->Html->link($post['User']['username'], array('controller' => 'users', 'action' => 'profile', $post['User']['id']));
 					echo ' &raquo; ';

@@ -79,7 +79,7 @@ class ThreadsController extends AppController {
 			$this->Thread->create();
 			if ($this->Thread->saveAssociated($this->request->data)) {
 				$this->Session->setFlash(__('The post has been saved'));
-				$this->redirect(array('controller' => 'boards', 'action' => 'index'));
+				$this->redirect(array('controller' => 'boards', 'action' => 'view', $board['Board']['id']));
 			} else {
 				$this->Session->setFlash(__('The post could not be saved. Please, try again.'));
 			}
