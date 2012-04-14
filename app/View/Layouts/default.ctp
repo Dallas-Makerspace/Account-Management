@@ -34,17 +34,21 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 <li><?php echo $this->Html->link(__('Blog', true), 'http://dallasmakerspace.org/blog');?></li>
 <li><?php echo $this->Html->link(__('Wiki', true), 'http://dallasmakerspace.org/wiki');?></li>
 <li><?php echo $this->Html->link(__('Calendar', true), array('controller' => 'pages', 'action' => 'display', 'calendar'));?></li>
+<?php if($auth): ?>
+<li><?php echo $this->Html->link(__('Discuss', true), array('controller' => 'boards', 'action' => 'index'));?></li>
+<?php endif; ?>
 <?php if(in_array($auth['class'],array('supporting','regular'))): ?>
-<li><?php echo $this->Html->link(__('Inventory', true), array('controller' => 'inventory', 'action' => 'index'));?></li>
+<li><?php echo $this->Html->link(__('Inventory', true), 'https://dallasmakerspace.org/inventory');?></li>
 <li><?php echo $this->Html->link(__('Members', true), array('controller' => 'users', 'action' => 'index'));?></li>
 <?php endif; ?>
-<li><?php echo $this->Html->link(__('Voting', true), array('controller' => 'ballots', 'action' => 'index'));?></li>
+<li><?php echo $this->Html->link(__('Voting', true), 'https://dallasmakerspace.org/voting');?></li>
 <li class="right"><?php echo $this->Html->link(__('Help', true), array('controller' => 'pages', 'action' => 'display', 'help'));?></li>
 <?php if($auth): ?>
 <li class="right"><?php echo $this->Html->link(__('Logout', true), array('controller' => 'users', 'action' => 'logout'));?></li>
 <li class="right"><?php echo $this->Html->link(__('My Account', true), array('controller' => 'users', 'action' => 'dashboard'));?></li>
 <?php else: ?>
 <li class="right"><?php echo $this->Html->link(__('Login', true), array('controller' => 'users', 'action' => 'login'));?></li>
+<li class="right"><?php echo $this->Html->link(__('Register', true), array('controller' => 'users', 'action' => 'register'));?></li>
 <?php endif; ?>
 </ul>
 </div>
@@ -53,7 +57,10 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 
 <div id="content">
 
-<?php echo $this->Session->flash(); ?>
+<?php
+echo $this->Session->flash();
+echo $this->Session->flash('auth');
+?>
 
 <?php echo $content_for_layout; ?>
 

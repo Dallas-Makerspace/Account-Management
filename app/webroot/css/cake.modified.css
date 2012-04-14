@@ -1,3 +1,15 @@
+/** Post Formatting **/
+.posts td p {
+	margin: 0;
+}
+
+.posts td blockquote {
+	margin: 0 10px 5px 20px;
+	padding: 7px 0 0 7px;
+	border: 1px solid #CCC;
+	background: #EEE;
+}
+
 /** Print **/
 .printonly {
 	display: none;

@@ -1,7 +1,6 @@
 * profile pictures
 * logging
 * subscription management
-* maillist archive viewer
 * Payment/donation history and recurring billing
 * links to users' wiki profile page
 * change password hashing to include salt in the db?
@@ -9,4 +8,7 @@
 	Con: attacker that gains database access now has the salt+hash, currently they don't necessarily have the salt (though it's a single salt for all entries)
 * Cross-app login to wiki, inventory, voting, et al for single sign-on
 ** Mediawiki: try modifying http://www.mediawiki.org/wiki/Extension:Phpbb_Single_Sign-On to read our session data
-
+*Clean up thread view
+*Syntax highlight for some languages
+*Add quote option for replies
+*Add thread locking

@@ -84,8 +84,15 @@ line-height: 30px;
 font-size: 17px;
 font-weight: 100;
 }
+#content h3 {
+margin: 0;
+color: #1f1f1f;
+line-height: 20px;
+font-size: 14px;
+font-weight: bold;
+}
 
-#content p { padding: 0 0 10px 0; color: #232323;}
+#content p { padding: 0 0 5px 0; color: #232323;}
 #content ul { padding: 0 20px 10px 30px; }
 
 #sidebar {
