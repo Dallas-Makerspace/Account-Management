@@ -68,7 +68,7 @@ class Board extends AppModel {
 		'Thread' => array(
 			'className' => 'Thread',
 			'foreignKey' => 'board_id',
-			'dependent' => false,
+			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',

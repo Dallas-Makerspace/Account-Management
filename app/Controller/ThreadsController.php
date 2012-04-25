@@ -39,11 +39,18 @@ class ThreadsController extends AppController {
 		}
 
 		$this->Thread->Behaviors->attach('Containable');
-		$this->Thread->contain(array('User','Board','Post' => 'User'));
-
 		$thread = $this->Thread->read(null, $id);
+		//$this->Thread->contain(array('User','Board','Post' => 'User'));
 
-		$this->set('thread', $thread);
+		$this->Thread->Post->Behaviors->attach('Containable');
+		$this->paginate = array(
+			'conditions' => array('Post.thread_id' => $thread['Thread']['id']),
+			'contain' => array('User'),
+			'limit' => 5
+		);
+		$posts = $this->paginate('Post');
+
+		$this->set(compact('thread','posts'));
 	}
 
 /**
@@ -89,30 +96,49 @@ class ThreadsController extends AppController {
 /* Admin Role Functions */
 
 /**
- * edit method
+ * lock method
  *
  * @param string $id
  * @return void
  */
-	public function edit($id = null) {
+	public function lock($id = null) {
+		if (!$this->request->is('post')) {
+			throw new MethodNotAllowedException();
+		}
 		$this->Thread->id = $id;
 		if (!$this->Thread->exists()) {
 			throw new NotFoundException(__('Invalid thread'));
 		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($this->Thread->save($this->request->data)) {
-				$this->Session->setFlash(__('The thread has been saved'));
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The thread could not be saved. Please, try again.'));
-			}
+		if ($this->Thread->lock($id)) {
+			$this->Session->setFlash(__('Thread locked'));
 		} else {
-			$this->request->data = $this->Thread->read(null, $id);
+			$this->Session->setFlash(__('Thread was not locked'));
 		}
-		$boards = $this->Thread->Board->find('list');
-		$users = $this->Thread->User->find('list');
-		$this->set(compact('boards', 'users'));
+		$this->redirect(array('controller' => 'boards', 'action' => 'index'));
 	}
+
+/**
+ * unlock method
+ *
+ * @param string $id
+ * @return void
+ */
+	public function unlock($id = null) {
+		if (!$this->request->is('post')) {
+			throw new MethodNotAllowedException();
+		}
+		$this->Thread->id = $id;
+		if (!$this->Thread->exists()) {
+			throw new NotFoundException(__('Invalid thread'));
+		}
+		if ($this->Thread->unlock($id)) {
+			$this->Session->setFlash(__('Thread unlocked'));
+		} else {
+			$this->Session->setFlash(__('Thread was not unlocked'));
+		}
+		$this->redirect(array('controller' => 'boards', 'action' => 'index'));
+	}
+
 
 /**
  * delete method
@@ -130,9 +156,9 @@ class ThreadsController extends AppController {
 		}
 		if ($this->Thread->delete()) {
 			$this->Session->setFlash(__('Thread deleted'));
-			$this->redirect(array('action' => 'index'));
+		} else {
+			$this->Session->setFlash(__('Thread was not deleted'));
 		}
-		$this->Session->setFlash(__('Thread was not deleted'));
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(array('controller' => 'boards', 'action' => 'index'));
 	}
 }

@@ -59,7 +59,7 @@ class BoardsController extends AppController {
 		}
 
 		$this->Board->Behaviors->attach('Containable');
-		$this->Board->contain(array('Thread' => 'User'));
+		//$this->Board->contain(array('Thread' => 'User'));
 
 		$board = $this->Board->read(null, $id);
 
@@ -72,11 +72,19 @@ class BoardsController extends AppController {
 			$this->redirect(array('action' => 'index'));
 		}
 
-		foreach ($board['Thread'] as &$thread) {
-			$thread['LastPost'] = $this->Board->Thread->lastPost($thread['id']);
+		$this->Board->Thread->Behaviors->attach('Containable');
+		$this->paginate = array(
+			'conditions' => array('Thread.board_id' => $board['Board']['id']),
+			'contain' => array('User'),
+			'limit' => 10
+		);
+		$threads = $this->paginate('Thread');
+
+		foreach ($threads as &$thread) {
+			$thread['Thread']['LastPost'] = $this->Board->Thread->lastPost($thread['Thread']['id']);
 		}
 
-		$this->set('board', $board);
+		$this->set(compact('board','threads'));
 	}
 
 /* Admin Role Functions */

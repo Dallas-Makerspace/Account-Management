@@ -4,31 +4,48 @@
 	<table cellpadding = "0" cellspacing = "0">
 	<?php
 		$i = 0;
-		foreach ($thread['Post'] as $post): ?>
+		foreach ($posts as $post): ?>
 		<tr>
 			<td>
-				<h3 id="post-<?php echo $post['id']; ?>">
+				<h3 id="post-<?php echo $post['Post']['id']; ?>">
 					<?php
 					echo $this->Html->link($post['User']['username'], array('controller' => 'users', 'action' => 'profile', $post['User']['id']));
 					echo ' &raquo; ';
-					echo $this->Time->niceShort($post['created']);
-					if ($post['mailed'] == 1) {
+					echo $this->Time->niceShort($post['Post']['created']);
+					if ($post['Post']['mailed'] == 1) {
 						echo ' via email';
 					}
 					?>
 				</h3>
-				<p><?php echo $this->Text->autoLinkUrls($this->Markdown->parse($post['text']), array('escape' => false)); ?></p>
+				<p><?php echo $this->Text->autoLinkUrls($this->Markdown->parse($post['Post']['text']), array('escape' => false)); ?></p>
 			</td>
 		</tr>
 	<?php endforeach; ?>
 	</table>
+	<p>
+	<?php
+	echo $this->Paginator->counter(array(
+	'format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')
+	));
+	?>	</p>
+
+	<div class="paging">
+	<?php
+		echo $this->Paginator->prev('< ' . __('previous'), array(), null, array('class' => 'prev disabled'));
+		echo $this->Paginator->numbers(array('separator' => ''));
+		echo $this->Paginator->next(__('next') . ' >', array(), null, array('class' => 'next disabled'));
+	?>
+	</div>
 </div>
+<?php if ($thread['Thread']['locked'] == 0 || $auth['role'] === 'admin'): ?>
+<p>
 <?php
 	echo $this->Js->link(__('Add Reply'),
 		array('controller' => 'posts', 'action' => 'add', 'thread' => $thread['Thread']['id']),
 		array('class' => 'button icon add', 'id' => 'add-post','before' => $this->Js->get('#posts-form')->effect('fadeIn', array('buffer' => false)) . $this->Js->get('#add-post')->effect('hide', array('buffer' => false)))
 	);
 ?>
+</p>
 <div id="posts-form" class="posts form" style="display: none">
 <?php echo $this->Form->create('Post',array('url' => '/posts/add/thread:' . $thread['Thread']['id']));?>
 	<fieldset>
@@ -49,17 +66,25 @@
 	echo $this->Form->end();
 ?>
 </div>
+<?php endif; ?>
+
 <?php
 
 if ($auth['role'] == 'admin' || $thread['Board']['readonly'] == 0) {
-	$page_actions = array(
-		$this->Html->link(__('New Thread', true), array('controller' => 'threads', 'action' => 'add', 'board' => $thread['Board']['id'])),
-		$this->Html->link(__('New Reply', true), array('controller' => 'posts', 'action' => 'add', 'thread' => $thread['Thread']['id'])),
-	);
+	$page_actions[] = $this->Html->link(__('New Thread', true), array('controller' => 'threads', 'action' => 'add', 'board' => $thread['Board']['id']));
 }
 
-$page_admin_actions = array(
-	
-);
+if ($auth['role'] == 'admin' || $thread['Thread']['locked'] == 0) {
+	$page_actions[] = $this->Html->link(__('New Reply', true), array('controller' => 'posts', 'action' => 'add', 'thread' => $thread['Thread']['id']));
+}
+
+if ($thread['Thread']['locked'] == 1) {
+	$page_admin_actions[] = $this->Form->postLink(__('Unlock Thread'), array('action' => 'unlock', $thread['Thread']['id']), null, __('Are you sure you want to unlock this thread?'));
+} else {
+	$page_admin_actions[] = $this->Form->postLink(__('Lock Thread'), array('action' => 'lock', $thread['Thread']['id']), null, __('Are you sure you want to lock this thread?'));
+}
+
+$page_admin_actions[] =	$this->Form->postLink(__('Delete Thread'), array('action' => 'delete', $thread['Thread']['id']), null, __('Are you sure you want to delete this thread?'));
+
 $this->set(compact('page_actions','page_admin_actions'));
 ?>

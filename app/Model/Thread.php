@@ -72,7 +72,7 @@ class Thread extends AppModel {
 		'Post' => array(
 			'className' => 'Post',
 			'foreignKey' => 'thread_id',
-			'dependent' => false,
+			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
@@ -101,5 +101,51 @@ class Thread extends AppModel {
 			'order' => array('Post.created DESC'),
 			'limit' => 1,
 		));
+	}
+
+/**
+ * lock method
+ *
+ * @param string $id
+ * @return array
+ */
+	public function lock ($id = null) {
+		$this->id = $id;
+		if (!$this->exists()) {
+			return false;
+		}
+
+		$this->recursive = -1;
+		$this->read();
+
+		$this->data['Thread']['locked'] = true;
+		if ($this->save()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+/**
+ * unlock method
+ *
+ * @param string $id
+ * @return array
+ */
+	public function unlock ($id = null) {
+		$this->id = $id;
+		if (!$this->exists()) {
+			return false;
+		}
+
+		$this->recursive = -1;
+		$this->read();
+
+		$this->data['Thread']['locked'] = false;
+		if ($this->save()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

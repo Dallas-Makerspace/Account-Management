@@ -8,21 +8,24 @@
 		echo $this->Form->input('description');
 		echo $this->Form->input('public');
 		echo $this->Form->input('readonly');
-		echo $this->Form->input('threads_count');
-		echo $this->Form->input('User');
 	?>
 	</fieldset>
-<?php echo $this->Form->end(__('Submit'));?>
+<?php
+	echo $this->Html->div('button-group',
+		$this->Form->button(__('Save'), array('type'=>'submit','class'=>'button primary icon approve'))
+		. $this->Html->link(__('Cancel'), array('controller' => 'boards', 'action' => 'view', $this->data['Board']['id']), array('class' => 'button danger'))
+	);
+	echo $this->Form->end();
+?>
 </div>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
+<?php
+$page_actions = array(
+	$this->Html->link(__('New Thread', true), array('controller' => 'threads', 'action' => 'add', 'board' => $this->data['Board']['id'])),
+);
 
-		<li><?php echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $this->Form->value('Board.id')), null, __('Are you sure you want to delete # %s?', $this->Form->value('Board.id'))); ?></li>
-		<li><?php echo $this->Html->link(__('List Boards'), array('action' => 'index'));?></li>
-		<li><?php echo $this->Html->link(__('List Threads'), array('controller' => 'threads', 'action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New Thread'), array('controller' => 'threads', 'action' => 'add')); ?> </li>
-		<li><?php echo $this->Html->link(__('List Users'), array('controller' => 'users', 'action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New User'), array('controller' => 'users', 'action' => 'add')); ?> </li>
-	</ul>
-</div>
+$page_admin_actions = array(
+	$this->Html->link(__('Add Board', true), array('action' => 'add')),
+	$this->Form->postLink(__('Delete Board'), array('action' => 'delete', $this->data['Board']['id']), null, __('Are you sure you want to delete this board?'))
+);
+$this->set(compact('page_actions','page_admin_actions'));
+?>

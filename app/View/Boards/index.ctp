@@ -20,3 +20,9 @@
 <?php endforeach; ?>
 	</table>
 </div>
+<?php
+$page_admin_actions = array(
+	$this->Html->link(__('Add Board', true), array('action' => 'add')),
+);
+$this->set(compact('page_admin_actions'));
+?>

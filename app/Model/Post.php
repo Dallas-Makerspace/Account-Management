@@ -20,7 +20,7 @@ class Post extends AppModel {
  *
  * @var string
  */
-	public $order = 'Post.created DESC';
+	public $order = 'Post.created ASC';
 /**
  * Validation rules
  *
@@ -74,4 +74,31 @@ class Post extends AppModel {
 			'counterCache' => true
 		)
 	);
+/**
+ * beforeSave callback
+ *
+ */
+	public function beforeSave() {
+		$this->Thread->recursive = -1;
+		$thread = $this->Thread->findById($this->data['Post']['thread_id']);
+
+		// Only admins can post to a locked thread
+		if ($thread['Thread']['locked'] == 1 && $auth['role'] !== 'admin') {
+			return false;
+		} else {
+			return true;
+		}
+	}
+/**
+ * afterSave callback
+ *
+ */
+	public function afterSave() {
+		$this->Thread->recursive = -1;
+		$thread = $this->Thread->findById($this->data['Post']['thread_id']);
+		$thread['Thread']['updated'] = null;
+		$this->Thread->save($thread);
+
+		return true;
+	}
 }
