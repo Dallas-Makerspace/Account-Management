@@ -386,7 +386,7 @@ class UsersController extends AppController {
 		// Show admins and auditors all users, even inactive ones
 		if (!in_array($this->Auth->user('role'), array('admin', 'auditor'))) {
 			$this->paginate = array(
-				'conditions' => array('User.active' => 1),
+				'conditions' => array('User.active' => 1, 'User.class' => array('supporting', 'regular')),
 			);
 		}
 		$this->set('users', $this->paginate());

@@ -1,4 +1,4 @@
-<h2><?php  echo h($thread['Thread']['subject']);?></h2>
+<h2><?php if ($thread['Thread']['locked']) { echo '[Locked] '; } echo h($thread['Thread']['subject']);?></h2>
 <div class="breadcrumbs"><?php echo $this->Html->link(__('Board Index'), array('controller' => 'boards')); ?> &raquo; <?php echo $this->Html->link($thread['Board']['description'], array('controller' => 'boards', 'action' => 'view', $thread['Board']['id'])); ?></div>
 <div class="posts">
 	<table cellpadding = "0" cellspacing = "0">
