@@ -10,8 +10,8 @@
 <?php
 	echo $this->Html->div('button-group',
 		$this->Form->button(__('Login'), array('type'=>'submit','class'=>'button primary icon approve'))
-		. $this->Html->link(__('Forgot Username'), array('action' => 'index'), array('class' => 'button'))
-		. $this->Html->link(__('Forgot Password'), array('action' => 'index'), array('class' => 'button'))
+		. $this->Html->link(__('Forgot Username'), array('action' => 'lostuser'), array('class' => 'button'))
+		. $this->Html->link(__('Forgot Password'), array('action' => 'lostpass'), array('class' => 'button'))
 	);
 	echo $this->Form->end();
 ?>

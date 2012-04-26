@@ -16,7 +16,7 @@ class UsersController extends AppController {
 		// Allow all users to access their profile
 		if (in_array($this->action, array('dashboard', 'myprofile', 'changemail', 'changepass'))) {
 			return true;
-		}		
+		}
 
 		if ( //Allow supporting and regular classes to access the index and profile actions
 			in_array($this->action, array('index', 'profile'))
