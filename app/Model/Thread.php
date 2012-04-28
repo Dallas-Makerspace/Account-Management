@@ -19,7 +19,7 @@ class Thread extends AppModel {
  *
  * @var string
  */
-	public $order = 'Thread.updated DESC';
+	public $order = array('Thread.sticky DESC', 'Thread.updated DESC');
 /**
  * Validation rules
  *

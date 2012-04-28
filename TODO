@@ -10,7 +10,6 @@
 ** Mediawiki: try modifying http://www.mediawiki.org/wiki/Extension:Phpbb_Single_Sign-On to read our session data
 
 * Discussion enhancements
-** stickies
 ** Syntax highlight for some languages
 ** Add quote option for replies
 ** Preview before post

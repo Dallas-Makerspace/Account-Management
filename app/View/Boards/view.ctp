@@ -19,7 +19,15 @@ $this->Paginator->options(array(
 		foreach ($threads as $thread): ?>
 		<tr>
 			<td>
-				<strong><?php if ($thread['Thread']['locked']) { echo '[Locked] '; } echo $this->Html->link($thread['Thread']['subject'], array('controller' => 'threads', 'action' => 'view', $thread['Thread']['id']));?></strong><br />
+				<strong><?php
+				if ($thread['Thread']['sticky']) {
+					echo '<span class="sticky"></span>';
+				}
+				if ($thread['Thread']['locked']) {
+					echo '<span class="locked"></span>';
+				}
+				echo $this->Html->link($thread['Thread']['subject'], array('controller' => 'threads', 'action' => 'view', $thread['Thread']['id']));
+				?></strong><br />
 				by <?php echo $this->Html->link($thread['User']['username'], array('controller' => 'users', 'action' => 'profile', $thread['User']['id']));?> &raquo; <?php echo $this->Time->niceShort($thread['Thread']['created']);?>
 			</td>
 			<td><?php echo $thread['Thread']['post_count'] - 1;?></td>

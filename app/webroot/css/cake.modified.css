@@ -1,3 +1,21 @@
+/** Icons **/
+span.sticky {
+	content: "";
+	display: block;
+	float: left;
+	width: 14px;
+	height: 12px;
+	background: url(../img/gh-icons.png) 0 -348px no-repeat;
+}
+span.locked {
+	content: "";
+	display: block;
+	float: left;
+	width: 14px;
+	height: 12px;
+	background: url(../img/gh-icons.png) 0 -192px no-repeat;
+}
+
 /** Post Formatting **/
 .posts td p {
 	margin: 0;
