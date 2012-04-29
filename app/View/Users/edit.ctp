@@ -14,6 +14,7 @@
 		echo $this->Form->input('phone');
 		echo $this->Form->input('active');
 		echo $this->Form->input('textonly_email', array('label' => 'Text-only emails'));
+		echo $this->Form->input('Board',array('type' => 'select', 'multiple' => 'checkbox', 'label' => 'Subscriptions'));
 	?>
 	</fieldset>
 <?php
@@ -30,7 +31,7 @@ $page_actions = array(
 	$this->Html->link(__('Edit My Profile', true), array('controller' => 'users', 'action' => 'myprofile')),
 	$this->Html->link(__('Change My Password', true), array('controller' => 'users', 'action' => 'changepass')),
 	$this->Html->link(__('Change My E-Mail', true), array('controller' => 'users', 'action' => 'changemail')),
-	$this->Html->link(__('Change My Subscriptions', true), array('controller' => 'lists', 'action' => 'index')),
+	$this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions')),
 );
 
 if (in_array($auth['class'], array('supporting', 'regular'))) {

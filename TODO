@@ -4,7 +4,7 @@
 ** profile pictures
 ** subscription management
 ** Payment/donation history and recurring billing
-** links to users' wiki profile page
+** Unsub private boards when user is changed to friend
 
 * Cross-app login to wiki, inventory, voting, et al for single sign-on
 ** Mediawiki: try modifying http://www.mediawiki.org/wiki/Extension:Phpbb_Single_Sign-On to read our session data
@@ -13,7 +13,6 @@
 ** Syntax highlight for some languages
 ** Add quote option for replies
 ** Preview before post
-** subscribe to board
 
 * Mail
 ** Parser

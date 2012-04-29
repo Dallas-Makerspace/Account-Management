@@ -95,7 +95,7 @@ class Board extends AppModel {
 			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
-			'order' => '',
+			'order' => 'Board.order ASC',
 			'limit' => '',
 			'offset' => '',
 			'finderQuery' => '',
@@ -122,6 +122,25 @@ class Board extends AppModel {
 			'order' => array('Thread.created DESC'),
 			'limit' => 1,
 		));
+	}
+
+/**
+ * isSubscribed Method
+ *
+ * @param string $id
+ * @return array
+ */
+	public function isSubscribed ($id = null) {
+		$this->id = $id;
+		if (!$this->exists()) {
+			return false;
+		}
+
+		if ($this->UsersBoard->findByUserIdAndBoardId(AuthComponent::user('id'),$id)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

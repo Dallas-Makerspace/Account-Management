@@ -61,9 +61,13 @@ if (
 	($board['Board']['public'] == 1 && $board['Board']['readonly'] == 0) ||
 	($board['Board']['public'] == 0 && $board['Board']['readonly'] == 0 && in_array($auth['class'], array('supporting','regular')))
 ) {
-	$page_actions = array(
-		$this->Html->link(__('New Thread', true), array('controller' => 'threads', 'action' => 'add', 'board' => $board['Board']['id'])),
-	);
+	$page_actions[] = $this->Html->link(__('New Thread', true), array('controller' => 'threads', 'action' => 'add', 'board' => $board['Board']['id']));
+}
+
+$page_actions[] = $this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions'));
+
+if ($subscription) {
+	echo '<p>You are subscribed to this board, to stop receiving e-mails you can unsubscribe using the ' . $this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions')) . ' page.</p>';
 }
 
 $page_admin_actions = array(

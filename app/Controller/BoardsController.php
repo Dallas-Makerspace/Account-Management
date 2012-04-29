@@ -76,7 +76,7 @@ class BoardsController extends AppController {
 		$this->paginate = array(
 			'conditions' => array('Thread.board_id' => $board['Board']['id']),
 			'contain' => array('User'),
-			'limit' => 10
+			'limit' => 20
 		);
 		$threads = $this->paginate('Thread');
 
@@ -84,7 +84,9 @@ class BoardsController extends AppController {
 			$thread['Thread']['LastPost'] = $this->Board->Thread->lastPost($thread['Thread']['id']);
 		}
 
-		$this->set(compact('board','threads'));
+		$subscription = $this->Board->isSubscribed($id);
+
+		$this->set(compact('board','threads','subscription'));
 	}
 
 /* Admin Role Functions */

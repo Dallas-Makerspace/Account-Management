@@ -1,3 +1,9 @@
+<?php
+$this->Paginator->options(array(
+    'update' => '#content',
+    'evalScripts' => true
+));
+?>
 <h2><?php
 	if ($thread['Thread']['sticky']) {
 		echo '[Sticky] ';
@@ -84,6 +90,12 @@ if ($auth['role'] == 'admin' || $thread['Board']['readonly'] == 0) {
 
 if ($auth['role'] == 'admin' || $thread['Thread']['locked'] == 0) {
 	$page_actions[] = $this->Html->link(__('New Reply', true), array('controller' => 'posts', 'action' => 'add', 'thread' => $thread['Thread']['id']));
+}
+
+$page_actions[] = $this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions'));
+
+if ($subscription) {
+	echo '<p>You are subscribed to this board, to stop receiving e-mails you can unsubscribe using the ' . $this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions')) . ' page.</p>';
 }
 
 if ($thread['Thread']['locked'] == 1) {

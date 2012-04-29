@@ -72,26 +72,26 @@ class User extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-        'role' => array(
-            'valid' => array(
-                'rule' => array('inList', array('admin', 'user', 'auditor')),
-                'message' => 'Please enter a valid role',
+		'role' => array(
+			'valid' => array(
+				'rule' => array('inList', array('admin', 'user', 'auditor')),
+				'message' => 'Please enter a valid role',
 				'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-            )
-        ),
-        'class' => array(
-            'valid' => array(
-                'rule' => array('inList', array('friend', 'supporting', 'regular')),
-                'message' => 'Please enter a valid class',
+			)
+		),
+		'class' => array(
+			'valid' => array(
+				'rule' => array('inList', array('friend', 'supporting', 'regular')),
+				'message' => 'Please enter a valid class',
 				'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-            )
-        ),
+			)
+		),
 		'first_name' => array(
 			'notempty' => array(
 				'rule' => array('notempty'),
@@ -142,14 +142,14 @@ class User extends AppModel {
  * @var array
  */
 	public $hasMany = array(
-		'Posts' => array(
+		'Post' => array(
 			'className' => 'Post',
 			'foreignKey' => 'user_id',
 			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',
-			'order' => '',
-			'limit' => '',
+			'order' => 'Post.created DESC',
+			'limit' => '10',
 			'offset' => '',
 			'exclusive' => '',
 			'finderQuery' => '',
@@ -164,7 +164,7 @@ class User extends AppModel {
  * @var array
  */
 	public $hasAndBelongsToMany = array(
-		'Boards' => array(
+		'Board' => array(
 			'className' => 'Board',
 			'joinTable' => 'users_boards',
 			'foreignKey' => 'user_id',
@@ -172,7 +172,7 @@ class User extends AppModel {
 			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
-			'order' => '',
+			'order' => 'Board.order ASC',
 			'limit' => '',
 			'offset' => '',
 			'finderQuery' => '',

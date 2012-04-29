@@ -14,7 +14,7 @@ class UsersController extends AppController {
 		}
 
 		// Allow all users to access their profile
-		if (in_array($this->action, array('dashboard', 'myprofile', 'changemail', 'changepass'))) {
+		if (in_array($this->action, array('dashboard', 'myprofile', 'changemail', 'changepass', 'subscriptions', 'sub', 'unsub'))) {
 			return true;
 		}
 
@@ -284,7 +284,8 @@ class UsersController extends AppController {
 
 /* Friend Class And Higher Functions */
 	public function dashboard() {
-		$this->set('user', $this->Auth->user());
+		$user = $this->User->read(null, $this->Auth->user('id'));
+		$this->set('user', $user);
 	}
 
 	public function myprofile() {
@@ -302,6 +303,27 @@ class UsersController extends AppController {
 		} else {
 			$this->request->data = $this->User->read(null, $this->User->id);
 		}
+	}
+
+	public function subscriptions() {
+		if ($this->request->is('post') || $this->request->is('put')) {
+			if ($this->User->save($this->request->data)) {
+				$this->Session->setFlash(__('Your subscriptions have been updated'));
+				$this->redirect(array('action' => 'dashboard'));
+			} else {
+				$this->Session->setFlash(__('Your subscriptions have not been updated. Please, try again.'));
+			}
+		}
+
+		$this->request->data = $this->User->read(null, $this->Auth->user('id'));
+
+		$this->User->Board->recursive = -1;
+		if (in_array($this->Auth->user('class'), array('supporting','regular')) || in_array($this->Auth->user('role'), array('admin','auditor'))) {
+			$boards = $this->User->Board->find('list');
+		} else {
+			$boards = $this->User->Board->find('list',array('conditions' => array('Board.public' => 1)));
+		}
+		$this->set(compact('boards'));
 	}
 
 	public function changemail() {
@@ -397,7 +419,22 @@ class UsersController extends AppController {
 		if (!$this->User->exists()) {
 			throw new NotFoundException(__('Invalid user'));
 		}
-		$this->set('user', $this->User->read(null, $id));
+
+		$this->User->recursive = -1;
+		$user = $this->User->read(null, $id);
+
+		// Only members can view the profile page, so we don't have to worry about posts from private boards being shown
+		$this->paginate = array(
+			'conditions' => array('Post.user_id' => $user['User']['id']),
+			'limit' => 10,
+			'order' => 'Post.created DESC'
+		);
+
+		$posts = $this->paginate('Post');
+
+		array_push($this->helpers, 'Time', 'Text', 'Markdown');
+
+		$this->set(compact('user', 'posts'));
 	}
 
 /* Admin Role Functions */
@@ -433,6 +470,10 @@ class UsersController extends AppController {
 			$this->request->data = $this->User->read(null, $id);
 			unset($this->request->data['User']['password']);
 		}
+
+		$this->User->Board->recursive = -1;
+		$boards = $this->User->Board->find('list');
+		$this->set('boards', $boards);
 	}
 
 	public function delete($id = null) {

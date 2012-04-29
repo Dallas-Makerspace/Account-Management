@@ -3,9 +3,9 @@
 	<fieldset>
 		<legend><?php echo __('Change Password'); ?></legend>
 	<?php
-		echo $this->Form->input('current_password', array('type' => 'password', 'label' => 'Current Password'));
-		echo $this->Form->input('new_password', array('type' => 'password', 'label' => 'New Password'));
-		echo $this->Form->input('verify_password', array('type' => 'password', 'label' => 'Verify New Password'));
+		echo $this->Form->input('current_password', array('div' => array('class' => 'required'), 'type' => 'password', 'label' => 'Current Password'));
+		echo $this->Form->input('new_password', array('div' => array('class' => 'required'), 'type' => 'password', 'label' => 'New Password'));
+		echo $this->Form->input('verify_password', array('div' => array('class' => 'required'), 'type' => 'password', 'label' => 'Verify New Password'));
 	?>
 	</fieldset>
 <?php
@@ -20,9 +20,8 @@
 <?php
 $page_actions = array(
 	$this->Html->link(__('Edit My Profile', true), array('controller' => 'users', 'action' => 'myprofile')),
-	$this->Html->link(__('Change My Password', true), array('controller' => 'users', 'action' => 'changepass')),
 	$this->Html->link(__('Change My E-Mail', true), array('controller' => 'users', 'action' => 'changemail')),
-	$this->Html->link(__('Change My Subscriptions', true), array('controller' => 'lists', 'action' => 'index')),
+	$this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions')),
 );
 
 if (in_array($auth['class'], array('supporting', 'regular'))) {

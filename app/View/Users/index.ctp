@@ -4,8 +4,10 @@
 	<tr>
 			<th><?php echo $this->Paginator->sort('username');?></th>
 			<th><?php echo $this->Paginator->sort('email');?></th>
+<?php if (in_array($auth['role'], array('admin', 'auditor'))): ?>
 			<th><?php echo $this->Paginator->sort('role');?></th>
 			<th><?php echo $this->Paginator->sort('class');?></th>
+<?php endif; ?>
 			<th><?php echo $this->Paginator->sort('first_name');?></th>
 			<th><?php echo $this->Paginator->sort('last_name');?></th>
 			<th><?php echo $this->Paginator->sort('phone');?></th>
@@ -15,8 +17,10 @@
 	<?php echo ($user['User']['active'] == 1 ? '<tr>' : '<tr style="background: #F99">'); ?>
 		<td><?php echo $this->Html->link($user['User']['username'], array('action' => 'profile', $user['User']['id'])); ?>&nbsp;</td>
 		<td><?php echo $this->Html->link($user['User']['email'], 'mailto:' . $user['User']['email']); ?>&nbsp;</td>
+<?php if (in_array($auth['role'], array('admin', 'auditor'))): ?>
 		<td><?php echo h($user['User']['role']); ?>&nbsp;</td>
 		<td><?php echo h($user['User']['class']); ?>&nbsp;</td>
+<?php endif; ?>
 		<td><?php echo h($user['User']['first_name']); ?>&nbsp;</td>
 		<td><?php echo h($user['User']['last_name']); ?>&nbsp;</td>
 		<td><?php echo h($user['User']['phone']); ?>&nbsp;</td>
@@ -44,7 +48,7 @@ $page_actions = array(
 	$this->Html->link(__('Edit My Profile', true), array('controller' => 'users', 'action' => 'myprofile')),
 	$this->Html->link(__('Change My Password', true), array('controller' => 'users', 'action' => 'changepass')),
 	$this->Html->link(__('Change My E-Mail', true), array('controller' => 'users', 'action' => 'changemail')),
-	$this->Html->link(__('Change My Subscriptions', true), array('controller' => 'lists', 'action' => 'index')),
+	$this->Html->link(__('Manage My Subscriptions', true), array('controller' => 'users', 'action' => 'subscriptions')),
 );
 
 if (in_array($auth['class'], array('supporting', 'regular'))) {

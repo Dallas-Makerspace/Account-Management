@@ -46,11 +46,13 @@ class ThreadsController extends AppController {
 		$this->paginate = array(
 			'conditions' => array('Post.thread_id' => $thread['Thread']['id']),
 			'contain' => array('User'),
-			'limit' => 5
+			'limit' => 10
 		);
 		$posts = $this->paginate('Post');
 
-		$this->set(compact('thread','posts'));
+		$subscription = $this->Thread->Board->isSubscribed($thread['Thread']['board_id']);
+
+		$this->set(compact('thread','posts','subscription'));
 	}
 
 /**
