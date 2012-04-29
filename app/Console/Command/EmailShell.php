@@ -11,21 +11,25 @@ class EmailShell extends AppShell {
 		$emails = $this->Email->find('all');
 
 		foreach ($emails as $email) {
-			$first_post = $this->Email->Post->Thread->firstPost($email['Post']['thread_id'],array('recursive' => -1));
+			// Don't send an e-mail to the person who made the post
+			// This is probably redundant since we never create an e-mail for them (see beforeSave for Post)
+			if ($email['Email']['user_id'] != $email['Post']['user_id']) {
+				$first_post = $this->Email->Post->Thread->firstPost($email['Post']['thread_id'],array('recursive' => -1));
 
-			$CakeEmail = new CakeEmail('boards');
-			$CakeEmail->template('post')
-				->viewVars(array('email' => $email))
-				->to($email['User']['email'])
-				->from(array(strtolower($email['Post']['Thread']['Board']['name']) . '@boards.dallasmakerspace.org' => $email['Post']['Thread']['Board']['description']));
+				$CakeEmail = new CakeEmail('boards');
+				$CakeEmail->template('post')
+					->viewVars(array('email' => $email))
+					->to($email['User']['email'])
+					->from(array(strtolower($email['Post']['Thread']['Board']['name']) . '@boards.dallasmakerspace.org' => $email['Post']['Thread']['Board']['description']));
 
-			if ($first_post['Post']['id'] == $email['Email']['post_id']) {
-				$CakeEmail->subject("[{$email['Post']['Thread']['Board']['name']}] {$email['Post']['Thread']['subject']}");
-			} else {
-				$CakeEmail->subject("[{$email['Post']['Thread']['Board']['name']}] RE: {$email['Post']['Thread']['subject']}");
+				if ($first_post['Post']['id'] == $email['Email']['post_id']) {
+					$CakeEmail->subject("[{$email['Post']['Thread']['Board']['name']}] {$email['Post']['Thread']['subject']}");
+				} else {
+					$CakeEmail->subject("[{$email['Post']['Thread']['Board']['name']}] RE: {$email['Post']['Thread']['subject']}");
+				}
+
+				$CakeEmail->send();
 			}
-
-			$CakeEmail->send();
 
 			$this->Email->delete($email['Email']['id']);
 		}

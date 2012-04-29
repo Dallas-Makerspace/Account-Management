@@ -124,10 +124,13 @@ class Post extends AppModel {
 		$subscribers = $this->User->UsersBoard->find('all', array('conditions' => array('UsersBoard.board_id' => $thread['Thread']['board_id'])));
 
 		foreach ($subscribers as $subscriber) {
-			$emails[] = array('Email' => array(
-				'post_id' => $this->data['Post']['id'],
-				'user_id' => $subscriber['UsersBoard']['user_id'],
-			));
+			// Don't send an e-mail to the person who made this post
+			if ($subscriber['UsersBoard']['user_id'] != $this->data['Post']['user_id']) {
+				$emails[] = array('Email' => array(
+					'post_id' => $this->data['Post']['id'],
+					'user_id' => $subscriber['UsersBoard']['user_id'],
+				));
+			}
 		}
 
 		$this->Email->saveAll($emails);
