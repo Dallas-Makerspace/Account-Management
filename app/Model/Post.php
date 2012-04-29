@@ -74,6 +74,28 @@ class Post extends AppModel {
 			'counterCache' => true
 		)
 	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+		'Email' => array(
+			'className' => 'Email',
+			'foreignKey' => 'post_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
+
 /**
  * beforeSave callback
  *
@@ -98,6 +120,17 @@ class Post extends AppModel {
 		$thread = $this->Thread->findById($this->data['Post']['thread_id']);
 		$thread['Thread']['updated'] = null;
 		$this->Thread->save($thread);
+
+		$subscribers = $this->User->UsersBoard->find('all', array('conditions' => array('UsersBoard.board_id' => $thread['Thread']['board_id'])));
+
+		foreach ($subscribers as $subscriber) {
+			$emails[] = array('Email' => array(
+				'post_id' => $this->data['Post']['id'],
+				'user_id' => $subscriber['UsersBoard']['user_id'],
+			));
+		}
+
+		$this->Email->saveAll($emails);
 
 		return true;
 	}

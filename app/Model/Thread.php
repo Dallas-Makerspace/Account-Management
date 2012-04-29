@@ -104,6 +104,25 @@ class Thread extends AppModel {
 	}
 
 /**
+ * firstPost Method
+ *
+ * @param string $id
+ * @return array
+ */
+	public function firstPost ($id = null) {
+		$this->id = $id;
+		if (!$this->exists()) {
+			return false;
+		}
+
+		return $this->Post->find('first', array(
+			'conditions' => array('Post.thread_id' => $id),
+			'order' => array('Post.created ASC'),
+			'limit' => 1,
+		));
+	}
+
+/**
  * lock method
  *
  * @param string $id

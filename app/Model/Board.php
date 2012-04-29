@@ -95,7 +95,7 @@ class Board extends AppModel {
 			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
-			'order' => 'Board.order ASC',
+			'order' => '',
 			'limit' => '',
 			'offset' => '',
 			'finderQuery' => '',
