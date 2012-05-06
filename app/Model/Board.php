@@ -26,8 +26,8 @@ class Board extends AppModel {
  */
 	public $validate = array(
 		'name' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
+			'unique' => array(
+				'rule' => array('unique'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,

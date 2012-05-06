@@ -17,6 +17,9 @@
 	echo $email['Post']['text'];
 
 	echo "\n\n_______________________________________________\n";
+	if ($email['Post']['Thread']['Board']['readonly'] == 1) {
+		echo "This thread is readonly, all responses will be dropped\n";
+	}
 	echo "[{$board_name}] {$board_desc}\n";
 	echo "{$board_name_lower}@boards.dallasmakerspace.org\n";
 	echo "https://dallasmakerspace.org/account{$url}\n";

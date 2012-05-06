@@ -5,6 +5,7 @@
 ** subscription management
 ** Payment/donation history and recurring billing
 ** Unsub private boards when user is changed to friend
+** Ability for user to change between regular and supporting
 
 * Cross-app login to wiki, inventory, voting, et al for single sign-on
 ** Mediawiki: try modifying http://www.mediawiki.org/wiki/Extension:Phpbb_Single_Sign-On to read our session data
@@ -13,9 +14,6 @@
 ** Syntax highlight for some languages
 ** Add quote option for replies
 ** Preview before post
-
-* Mail
-** Parser
 
 * change password hashing to include salt in the db?
 	Pro: makes it easier for cross-app authentication

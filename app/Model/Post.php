@@ -133,7 +133,9 @@ class Post extends AppModel {
 			}
 		}
 
-		$this->Email->saveAll($emails);
+		if ($emails) {
+			$this->Email->saveAll($emails);
+		}
 
 		return true;
 	}
