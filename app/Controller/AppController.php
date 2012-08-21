@@ -39,7 +39,7 @@ class AppController extends Controller {
 		'Security',
 		'Auth' => array(
 			'loginRedirect' => array('controller' => 'users', 'action' => 'dashboard'),
-			'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
+			'logoutRedirect' => array('controller' => 'boards', 'action' => 'index'),
 			'authError' => 'Did you really think you are allowed to see that?',
 			'authorize' => array('Controller'),
 		),

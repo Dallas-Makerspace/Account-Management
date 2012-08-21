@@ -127,7 +127,10 @@ class ParserShell extends AppShell {
 		// Thanks to the magic of the Thread model's sort, we get the latest thread matching the subject
 		$thread = $this->Board->Thread->findBySubject($subject);
 
-		// If thread can't be found, start a new one
+		// If thread can't be found, try looking into the e-mail for "THREAD_ID: "
+		// TODO: That^
+
+		// If thread still can't be found, start a new one
 		if (!$thread) {
 			// Start a new thread
 			$thread = array(

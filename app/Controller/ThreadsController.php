@@ -9,6 +9,7 @@ class ThreadsController extends AppController {
 
 	public function beforeFilter() {
 		parent::beforeFilter();
+		$this->Auth->allow('view');
 	}
 
 	public function isAuthorized($user) {

@@ -26,7 +26,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 
 
 <div id="header">
-<h1><?php echo $this->Html->link(__('Dallas Makerspace Account Panel', true), array('controller' => 'pages', 'action' => 'home'));?></h1>
+<?php echo $this->Html->image('logo.png'); ?><h1><?php __('Dallas Makerspace'); ?></h1>
 </div>
 
 <div id="menu">
@@ -34,9 +34,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 <li><?php echo $this->Html->link(__('Blog', true), 'http://dallasmakerspace.org/blog');?></li>
 <li><?php echo $this->Html->link(__('Wiki', true), 'http://dallasmakerspace.org/wiki');?></li>
 <li><?php echo $this->Html->link(__('Calendar', true), array('controller' => 'pages', 'action' => 'display', 'calendar'));?></li>
-<?php if($auth): ?>
 <li><?php echo $this->Html->link(__('Discuss', true), array('controller' => 'boards', 'action' => 'index'));?></li>
-<?php endif; ?>
 <?php if(in_array($auth['class'],array('supporting','regular'))): ?>
 <li><?php echo $this->Html->link(__('Inventory', true), 'https://dallasmakerspace.org/inventory');?></li>
 <li><?php echo $this->Html->link(__('Members', true), array('controller' => 'users', 'action' => 'index'));?></li>

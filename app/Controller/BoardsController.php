@@ -10,6 +10,7 @@ class BoardsController extends AppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->helpers[] = 'Time';
+		$this->Auth->allow('index','view');
 	}
 
 	public function isAuthorized($user) {

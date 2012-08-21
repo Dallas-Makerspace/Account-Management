@@ -51,7 +51,7 @@ $this->Paginator->options(array(
 	?>
 	</div>
 </div>
-<?php if ($thread['Thread']['locked'] == 0 || $auth['role'] === 'admin'): ?>
+<?php if ($auth && ($thread['Thread']['locked'] == 0 || $auth['role'] === 'admin')): ?>
 <p>
 <?php
 	echo $this->Js->link(__('Add Reply'),

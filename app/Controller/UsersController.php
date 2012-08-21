@@ -452,6 +452,7 @@ class UsersController extends AppController {
 	}
 
 	public function edit($id = null) {
+		// TODO: If class is changed from support/regular to friend, remove subscriptions to private boards
 		$this->User->id = $id;
 		if (!$this->User->exists()) {
 			throw new NotFoundException(__('Invalid user'));

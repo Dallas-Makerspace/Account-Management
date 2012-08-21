@@ -31,6 +31,7 @@ color: #fff;
 }
 #header h1 a { text-decoration: none; color: #F9F7ED; }
 #header h1 a:hover { text-decoration: none; color: #fff; }
+#header img { margin: 8px; }
 
 #menu {
 background: url(../img/menu.jpg) no-repeat;

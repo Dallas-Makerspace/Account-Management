@@ -1,8 +1,9 @@
 * logging
 
+* Allow users to stay logged in
+
 * User enhancements
 ** profile pictures
-** subscription management
 ** Payment/donation history and recurring billing
 ** Unsub private boards when user is changed to friend
 ** Ability for user to change between regular and supporting

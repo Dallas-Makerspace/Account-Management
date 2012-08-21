@@ -6,7 +6,7 @@
 <p>You are currently subscribed to the following boards:</p>
 <ul>
 <?php foreach ($user['Board'] as $board): ?>
-	<li><?php echo $this->Html->link($board['name'], array('controller' => 'boards', 'view' => $board['id'])); ?></li>
+	<li><?php echo $this->Html->link($board['name'], array('controller' => 'boards', 'action' => 'view', $board['id'])); ?></li>
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
